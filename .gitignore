@@ -1,0 +1,5 @@
+target/
+lecturemate.db
+run-logs/
+
+*.log

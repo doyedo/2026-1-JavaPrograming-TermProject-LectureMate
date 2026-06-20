@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.SVGPath?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.lecturemate.controller.MainController"
+            styleClass="root">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="app-header">
+            <ImageView fitHeight="42"
+                       fitWidth="220"
+                       preserveRatio="true"
+                       smooth="true"
+                       styleClass="app-logo">
+                <image>
+                    <Image url="@images/lecturemate-logo.png" />
+                </image>
+            </ImageView>
+            <HBox fx:id="statusBanner"
+                  alignment="CENTER_LEFT"
+                  spacing="10"
+                  styleClass="status-banner">
+                <ProgressIndicator fx:id="globalProgressIndicator"
+                                   prefHeight="16"
+                                   prefWidth="16"
+                                   visible="false"
+                                   managed="false" />
+                <Label fx:id="taskNameLabel" text="Ready" styleClass="section-title" />
+                <Label fx:id="statusMessageLabel" text="Select a task." styleClass="sub-label" wrapText="false" HBox.hgrow="ALWAYS" />
+                <Label fx:id="statusResultLabel" text="READY" styleClass="status-pill" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.30" styleClass="dashboard-split">
+            <items>
+                <VBox spacing="14" styleClass="sidebar">
+                    <TabPane fx:id="navTabPane" tabClosingPolicy="UNAVAILABLE" styleClass="nav-tabs" VBox.vgrow="ALWAYS">
+                        <tabs>
+                            <Tab fx:id="voiceTab" text="음성 변환">
+                                <VBox spacing="8" style="-fx-padding: 12 2 2 0;" styleClass="tab-content compact-tab">
+                                        <VBox spacing="8" styleClass="card compact-card">
+                                            <Label text="강의 정보" styleClass="section-title" />
+                                            <TextField fx:id="lectureTitleField" promptText="강의 제목" />
+                                            <TextField fx:id="lectureSubjectField" promptText="과목명" />
+                                            <HBox spacing="8">
+                                                <Button fx:id="createLectureButton"
+                                                        text="새 강의"
+                                                        onAction="#handleCreateLecture"
+                                                        maxWidth="Infinity"
+                                                        styleClass="primary-button"
+                                                        HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="updateLectureButton"
+                                                        text="수정"
+                                                        onAction="#handleUpdateLecture"
+                                                        maxWidth="Infinity"
+                                                        styleClass="secondary-button"
+                                                        HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="deleteLectureButton"
+                                                        text="삭제"
+                                                        onAction="#handleDeleteLecture"
+                                                        maxWidth="Infinity"
+                                                        styleClass="danger-button"
+                                                        HBox.hgrow="ALWAYS" />
+                                            </HBox>
+                                        </VBox>
+
+                                        <VBox spacing="8" styleClass="settings-panel card compact-card">
+                                            <Label text="변환 설정" styleClass="section-title" />
+                                            <HBox spacing="6" styleClass="recording-controls">
+                                                <Button fx:id="chooseFileButton"
+                                                        text="파일"
+                                                        onAction="#handleChooseAudioFile"
+                                                        maxWidth="Infinity"
+                                                        styleClass="secondary-button"
+                                                        HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="startRecordingButton"
+                                                        text="녹음"
+                                                        onAction="#handleStartRecording"
+                                                        maxWidth="Infinity"
+                                                        styleClass="secondary-button"
+                                                        HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="pauseRecordingButton"
+                                                        text="일시정지"
+                                                        onAction="#handlePauseRecording"
+                                                        maxWidth="Infinity"
+                                                        styleClass="secondary-button"
+                                                        HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="stopRecordingButton"
+                                                        text="중지"
+                                                        onAction="#handleStopRecording"
+                                                        maxWidth="Infinity"
+                                                        styleClass="danger-button"
+                                                        HBox.hgrow="ALWAYS" />
+                                            </HBox>
+                                            <Label fx:id="recordingStatusLabel"
+                                                   text="녹음 상태: 대기"
+                                                   wrapText="true"
+                                                   styleClass="sub-label" />
+                                            <Label text="선택된 파일명" styleClass="sub-label" />
+                                            <Label fx:id="selectedFileNameLabel" text="선택된 파일 없음" wrapText="true" />
+                                            <Label text="파일 경로" styleClass="sub-label" />
+                                            <TextField fx:id="selectedFilePathField" editable="false" promptText="-" />
+
+                                            <Label text="녹음 언어" styleClass="sub-label" />
+                                            <ComboBox fx:id="audioLanguageComboBox" maxWidth="Infinity" />
+
+                                            <Label text="음성 인식 모델" styleClass="sub-label" />
+                                            <ComboBox fx:id="sttModelComboBox" maxWidth="Infinity" />
+
+                                            <Label text="자동 요약 형식" styleClass="sub-label" />
+                                            <ComboBox fx:id="summaryFormatComboBox" maxWidth="Infinity" />
+
+                                            <Button fx:id="transcribeButton"
+                                                    text="텍스트 변환"
+                                                    onAction="#handleTranscribeAudioFile"
+                                                    maxWidth="Infinity"
+                                                    styleClass="primary-button" />
+                                            <Button fx:id="summaryButton"
+                                                    text="요약 생성"
+                                                    onAction="#handleGenerateSummary"
+                                                    maxWidth="Infinity"
+                                                    styleClass="primary-button" />
+                                        </VBox>
+                                </VBox>
+                            </Tab>
+
+                            <Tab fx:id="lectureListTab" text="강의 목록">
+                                <VBox spacing="12" styleClass="tab-content">
+                                    <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card compact-card">
+                                        <Label text="강의 필기" styleClass="section-title" HBox.hgrow="ALWAYS" />
+                                        <Button fx:id="openIntegratedWorkspaceButton"
+                                                text="통합 보기"
+                                                onAction="#handleShowIntegratedWorkspace"
+                                                styleClass="secondary-button" />
+                                        <Button fx:id="splitWorkspaceButton"
+                                                text="분할 보기"
+                                                onAction="#handleShowSplitWorkspace"
+                                                styleClass="secondary-button" />
+                                        <Button fx:id="editLectureButton"
+                                                text="제목 수정"
+                                                onAction="#handleEditLectureInfo"
+                                                styleClass="secondary-button" />
+                                    </HBox>
+
+                                    <VBox spacing="7" styleClass="card compact-card audio-player-card">
+                                        <HBox alignment="CENTER_LEFT" spacing="8">
+                                            <Label text="녹음 파일 듣기" styleClass="section-title" HBox.hgrow="ALWAYS" />
+                                            <Label fx:id="audioPlaybackTimeLabel"
+                                                   text="00:00 / 00:00"
+                                                   styleClass="audio-time-label" />
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="audio-button-group">
+                                            <HBox alignment="CENTER_LEFT" spacing="0" styleClass="audio-button-cluster">
+                                                <Button fx:id="playLectureAudioButton"
+                                                        onAction="#handlePlayLectureAudio"
+                                                        styleClass="audio-mini-button audio-play-button">
+                                                    <graphic>
+                                                        <SVGPath content="M 0 0 L 11 7 L 0 14 Z" styleClass="audio-play-icon" />
+                                                    </graphic>
+                                                </Button>
+                                                <Button fx:id="pauseLectureAudioButton"
+                                                        onAction="#handlePauseLectureAudio"
+                                                        styleClass="audio-mini-button audio-pause-button">
+                                                    <graphic>
+                                                        <SVGPath content="M 0 0 H 4 V 14 H 0 Z M 8 0 H 12 V 14 H 8 Z" styleClass="audio-pause-icon" />
+                                                    </graphic>
+                                                </Button>
+                                                <Button fx:id="stopLectureAudioButton"
+                                                        onAction="#handleStopLectureAudio"
+                                                        styleClass="audio-mini-button audio-stop-button">
+                                                    <graphic>
+                                                        <Rectangle width="10" height="10" styleClass="audio-stop-icon" />
+                                                    </graphic>
+                                                </Button>
+                                            </HBox>
+                                            <Slider fx:id="audioPlaybackSlider"
+                                                    min="0"
+                                                    max="1"
+                                                    value="0"
+                                                    disable="true"
+                                                    minWidth="163"
+                                                    prefWidth="201"
+                                                    maxWidth="224"
+                                                    styleClass="audio-seek-slider" />
+                                        </HBox>
+                                        <Label fx:id="audioPlaybackStatusLabel"
+                                               text="재생 상태: 선택된 강의 없음"
+                                               wrapText="true"
+                                               styleClass="sub-label" />
+                                    </VBox>
+
+                                    <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
+                                        <Label text="원문 텍스트 목록" styleClass="section-title" />
+                                        <ListView fx:id="lectureListView" VBox.vgrow="ALWAYS" />
+                                    </VBox>
+
+                                    <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
+                                        <Label text="최종 정리 노트 목록" styleClass="section-title" />
+                                        <ListView fx:id="summaryNoteListView" VBox.vgrow="ALWAYS" />
+                                    </VBox>
+                                </VBox>
+                            </Tab>
+
+                            <Tab fx:id="scheduleTab" text="일정 관리">
+                                <VBox spacing="12" styleClass="tab-content">
+                                    <VBox spacing="10" styleClass="card">
+                                        <HBox alignment="CENTER" spacing="8">
+                                            <Button fx:id="previousMonthButton"
+                                                    text="이전"
+                                                    onAction="#handlePreviousMonth"
+                                                    styleClass="secondary-button" />
+                                            <Label fx:id="calendarMonthLabel"
+                                                   text="2026. 06"
+                                                   styleClass="section-title"
+                                                   HBox.hgrow="ALWAYS" />
+                                            <Button fx:id="nextMonthButton"
+                                                    text="다음"
+                                                    onAction="#handleNextMonth"
+                                                    styleClass="secondary-button" />
+                                        </HBox>
+                                        <GridPane fx:id="calendarGrid" alignment="CENTER" hgap="6" vgap="6" styleClass="calendar-grid" />
+                                        <Button fx:id="showAllSchedulesButton"
+                                                text="전체 일정 보기"
+                                                onAction="#handleShowAllSchedules"
+                                                maxWidth="Infinity"
+                                                styleClass="secondary-button" />
+                                    </VBox>
+
+                                    <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
+                                        <HBox alignment="CENTER_LEFT" spacing="8">
+                                            <Label fx:id="scheduleFilterLabel"
+                                                   text="미완료 일정"
+                                                   styleClass="section-title"
+                                                   wrapText="true"
+                                                   HBox.hgrow="ALWAYS" />
+                                            <Button fx:id="addScheduleButton"
+                                                    text="일정 추가"
+                                                    onAction="#handleAddSchedule"
+                                                    styleClass="secondary-button" />
+                                        </HBox>
+                                        <ListView fx:id="scheduleListView" VBox.vgrow="ALWAYS" />
+                                    </VBox>
+                                </VBox>
+                            </Tab>
+
+                            <Tab fx:id="questionTab" text="질문하기">
+                                <VBox spacing="12" styleClass="tab-content">
+                                    <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
+                                        <Label text="AI 질문하기" styleClass="section-title" />
+                                        <Label fx:id="chatContextLabel"
+                                               text="현재 노트: -"
+                                               wrapText="true"
+                                               styleClass="sub-label" />
+                                        <ScrollPane fx:id="chatScrollPane"
+                                                    fitToWidth="true"
+                                                    hbarPolicy="NEVER"
+                                                    vbarPolicy="AS_NEEDED"
+                                                    styleClass="chat-scroll"
+                                                    VBox.vgrow="ALWAYS">
+                                            <content>
+                                                <VBox fx:id="chatMessagesBox"
+                                                      spacing="10"
+                                                      styleClass="chat-messages" />
+                                            </content>
+                                        </ScrollPane>
+                                        <TextArea fx:id="chatQuestionTextArea"
+                                                  prefRowCount="3"
+                                                  wrapText="true"
+                                                  promptText="질문을 입력하세요." />
+                                        <HBox spacing="8">
+                                            <Button fx:id="sendQuestionButton"
+                                                    text="질문 보내기"
+                                                    onAction="#handleAskQuestion"
+                                                    maxWidth="Infinity"
+                                                    styleClass="primary-button"
+                                                    HBox.hgrow="ALWAYS" />
+                                            <Button fx:id="clearChatButton"
+                                                    text="지우기"
+                                                    onAction="#handleClearChat"
+                                                    styleClass="secondary-button" />
+                                        </HBox>
+                                    </VBox>
+                                </VBox>
+                            </Tab>
+                        </tabs>
+                    </TabPane>
+                </VBox>
+
+                <StackPane fx:id="workspaceStack" styleClass="workspace">
+                    <HBox fx:id="conversionWorkspace" spacing="16">
+                    <VBox spacing="12" styleClass="content-panel card" HBox.hgrow="ALWAYS">
+                        <Label text="원문 텍스트" styleClass="section-title" />
+                        <VBox spacing="4">
+                            <Label fx:id="currentLectureTitleLabel" text="선택된 강의 없음" styleClass="section-title" wrapText="true" />
+                            <Label fx:id="currentLectureSubjectLabel" text="과목명: -" styleClass="sub-label" wrapText="true" />
+                            <Label fx:id="currentLectureCreatedAtLabel" text="생성일: -" styleClass="sub-label" />
+                        </VBox>
+                        <TextArea fx:id="transcriptTextArea"
+                                  promptText="음성 변환 결과 또는 직접 수정한 원문을 입력하세요."
+                                  wrapText="true"
+                                  VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Button fx:id="saveTranscriptButton"
+                                    text="원문 저장"
+                                    onAction="#handleSaveTranscript"
+                                    styleClass="secondary-button" />
+                            <Button text="삭제"
+                                    onAction="#handleDeleteLecture"
+                                    styleClass="danger-button" />
+                            <Label fx:id="transcriptStatusLabel" text="원문 저장 상태: 대기" styleClass="sub-label" wrapText="true" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="12" styleClass="summary-panel card" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="자동 요약 / 정리 노트" styleClass="section-title" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                        <HBox spacing="8">
+                            <TextField fx:id="summarySearchField" promptText="정리 노트 검색" HBox.hgrow="ALWAYS" />
+                            <Button fx:id="searchSummaryButton"
+                                    text="검색"
+                                    onAction="#handleSearchSummary"
+                                    styleClass="secondary-button" />
+                        </HBox>
+                        <HBox spacing="8">
+                            <ComboBox fx:id="noteFontSizeComboBox"
+                                      minWidth="86"
+                                      prefWidth="86"
+                                      maxWidth="86" />
+                            <ComboBox fx:id="noteFontComboBox" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                        <StackPane fx:id="summaryEditorContainer"
+                                   styleClass="summary-editor-container"
+                                   VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Button fx:id="saveSummaryButton"
+                                    text="정리 노트 저장"
+                                    onAction="#handleSaveSummary"
+                                    styleClass="primary-button" />
+                            <Label fx:id="summaryStatusLabel" text="정리 노트 상태: 대기" styleClass="sub-label" wrapText="true" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+                    </HBox>
+
+                    <VBox fx:id="libraryWorkspace"
+                          spacing="12"
+                          visible="false"
+                          managed="false"
+                          styleClass="library-workspace card">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                <Label fx:id="libraryLectureTitleLabel"
+                                       text="선택된 강의 없음"
+                                       styleClass="section-title"
+                                       wrapText="true" />
+                                <Label fx:id="libraryLectureMetaLabel"
+                                       text="과목명: -"
+                                       styleClass="sub-label"
+                                       wrapText="true" />
+                            </VBox>
+                            <Label fx:id="libraryModeLabel" text="정리 노트" styleClass="status-pill" />
+                            <Button fx:id="toggleLibraryModeButton"
+                                    text="원문 보기"
+                                    onAction="#handleToggleLibraryEditorMode"
+                                    styleClass="secondary-button" />
+                        </HBox>
+
+                        <HBox spacing="8">
+                            <TextField fx:id="librarySearchField"
+                                       promptText="키워드 검색"
+                                       HBox.hgrow="ALWAYS" />
+                            <Button fx:id="searchLibraryButton"
+                                    text="검색"
+                                    onAction="#handleSearchLibraryEditor"
+                                    styleClass="secondary-button" />
+                        </HBox>
+
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <ComboBox fx:id="libraryFontSizeComboBox"
+                                      minWidth="86"
+                                      prefWidth="86"
+                                      maxWidth="86" />
+                            <ComboBox fx:id="libraryFontComboBox" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+                        </HBox>
+
+                        <VBox spacing="6" styleClass="library-editor-frame" VBox.vgrow="ALWAYS">
+                            <Label text="필기 내용" styleClass="sub-label" />
+                            <StackPane fx:id="libraryEditorContainer"
+                                       styleClass="summary-editor-container library-editor-container"
+                                       VBox.vgrow="ALWAYS" />
+                        </VBox>
+
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Button fx:id="saveLibraryEditorButton"
+                                    text="선택 내용 저장"
+                                    onAction="#handleSaveLibraryEditor"
+                                    styleClass="primary-button" />
+                            <Label fx:id="libraryEditorStatusLabel"
+                                   text="편집 상태: 대기"
+                                   styleClass="sub-label"
+                                   wrapText="true"
+                                   HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+                </StackPane>
+            </items>
+        </SplitPane>
+    </center>
+
+    <padding>
+        <Insets bottom="0" left="0" right="0" top="0" />
+    </padding>
+</BorderPane>
